@@ -1,30 +1,13 @@
 //es lint special linting options for this file or even a specific line can be added via es-lint comments
 const express = require('express');
+const bookController = require('./../controllers/bookController');
 
 const bookRoutes = function(Book) {
   const bookRouter = express.Router();
 
   bookRouter.route('/books')
-    .post((req, res) => {
-      const book = new Book(req.body);
-      console.log(book);
-      book.save();
-      return res.json(book).status(201);
-    });
-
-  bookRouter.route('/books')
-    .get((req, res) => {
-      // const { query } = req;
-      // filtering the query, here only for genre query paran
-      const query = {};
-      if(req.query.genre) {
-          query.genre = req.query.genre;
-      }
-      Book.find(query, (err, books) => {
-          if(err) return res.send(err);
-          else return res.json(books);
-      });
-    });
+    .get(bookController.get)
+    .post(bookController.post);
 
   bookRouter.use('/books/:bookID', (req, res, next) => {
     Book.findById(req.params.bookID, (err, book) =>{
