@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 const Book = require('./models/bookModel');
 
@@ -8,6 +9,16 @@ const mongodb = mongoose.connect('mongodb://localhost/bookAPI', { useUnifiedTopo
 const PORT = process.env.PORT || 3000;
 const bookRouter = express.Router();
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+bookRouter.route('/books')
+  .post((req, res) => {
+    const book = new Book(req.body);
+    console.log(book);
+    book.save();
+    return res.json(book).status(201);
+  });
 
 bookRouter.route('/books')
   .get((req, res) => {
