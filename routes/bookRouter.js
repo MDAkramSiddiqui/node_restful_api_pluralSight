@@ -25,13 +25,28 @@ const bookRoutes = function(Book) {
       });
     });
 
+  bookRouter.use('/books/:bookID', (req, res, next) => {
+    Book.findById(req.params.bookID, (err, book) =>{
+      if(err) res.send(err);
+
+      if(book) {
+        req.book = book;
+        return next();
+      }
+      else res.sendStatus(404);
+    });
+  });
+
   bookRouter.route('/books/:bookID')
-    .get((req, res) => {
-      const bookID = req.params.bookID;
-      Book.findById(bookID, (err, book) => {
-          if(err) return res.send(err);
-          else return res.json(book);
-      });
+    .get((req, res) => res.json(req.book))
+    .put((req, res) => {
+      const { book } = req;
+      book.title = req.body.title;
+      book.author = req.body.author;
+      book.genre = req.body.genre;
+      book.read = req.body.read;
+      book.save();
+      res.json(book);
     });
   
   return bookRouter;
